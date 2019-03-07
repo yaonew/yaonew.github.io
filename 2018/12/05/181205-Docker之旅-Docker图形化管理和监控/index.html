@@ -1,0 +1,1742 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+  
+  
+    
+      
+    
+    
+      
+    
+  <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+  <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-flash.min.css" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+  <link href="//cdn.jsdelivr.net/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+  
+
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.5.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.5.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.5.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.5.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.5.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.5.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    fastclick: true,
+    lazyload: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="keywords" content="微服务,docker,Shipyard,cAdvisor,Portainer">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker之旅-Docker图形化管理和监控(一)">
+<meta property="og:url" content="http://nsoft.vip/2018/12/05/181205-Docker之旅-Docker图形化管理和监控/index.html">
+<meta property="og:site_name" content="Alex.Yao&#39;s Blog">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://static.nsoft.vip/18-12-5/24521079.jpg">
+<meta property="og:image" content="http://static.nsoft.vip/18-12-21/53100783.jpg">
+<meta property="og:image" content="http://static.nsoft.vip/18-12-21/43057608.jpg">
+<meta property="og:image" content="http://static.nsoft.vip/18-12-21/55843374.jpg">
+<meta property="og:image" content="http://static.nsoft.vip/18-12-21/76050008.jpg">
+<meta property="og:updated_time" content="2018-12-26T06:21:09.121Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Docker之旅-Docker图形化管理和监控(一)">
+<meta name="twitter:image" content="http://static.nsoft.vip/18-12-5/24521079.jpg">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Alex.Yao's Blog" type="application/atom+xml">
+
+
+
+
+  <link rel="canonical" href="http://nsoft.vip/2018/12/05/181205-Docker之旅-Docker图形化管理和监控/">
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Docker之旅-Docker图形化管理和监控(一) | Alex.Yao's Blog</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <!-- GitHub-start -->
+    <a href="https://github.com/yaonew" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewbox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+    <!-- GitHub-end -->
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Alex.Yao's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://nsoft.vip/2018/12/05/181205-Docker之旅-Docker图形化管理和监控/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Alex.Yao">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://static.nsoft.vip/head.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Alex.Yao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Docker之旅-Docker图形化管理和监控(一)
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-12-05 09:42:50" itemprop="dateCreated datePublished" datetime="2018-12-05T09:42:50+08:00">2018-12-05</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2018-12-26 14:21:09" itemprop="dateModified" datetime="2018-12-26T14:21:09+08:00">2018-12-26</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/微服务/" itemprop="url" rel="index"><span itemprop="name">微服务</span></a></span>
+
+                
+                
+                  ，
+                
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/微服务/docker/" itemprop="url" rel="index"><span itemprop="name">docker</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/12/05/181205-Docker之旅-Docker图形化管理和监控/#comments" itemprop="discussionUrl">
+                  <span class="post-meta-item-text">评论数：</span> <span class="post-comments-count valine-comment-count" data-xid="/2018/12/05/181205-Docker之旅-Docker图形化管理和监控/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/12/05/181205-Docker之旅-Docker图形化管理和监控/" class="leancloud_visitors" data-flag-title="Docker之旅-Docker图形化管理和监控(一)">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数：</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon">
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="http://static.nsoft.vip/18-12-5/24521079.jpg" alt=""></p>
+<a id="more"></a>
+<h2 id="Docker管理之官方三剑客"><a href="#Docker管理之官方三剑客" class="headerlink" title="Docker管理之官方三剑客"></a>Docker管理之官方三剑客</h2><h3 id="Docker-Machine"><a href="#Docker-Machine" class="headerlink" title="Docker Machine"></a>Docker Machine</h3><p>Docker Machine 是 Docker 官方提供的一个工具，它可以帮助我们在远程的机器上安装 Docker，或者在虚拟机 host 上直接安装虚拟机并在虚拟机中安装 Docker。我们还可以通过 docker-machine 命令来管理这些虚拟机和 Docker。</p>
+<ul>
+<li>以前你需要登录主机，按照主机及操作系统特有的安装以及配置步骤安装Docker，使其能运行Docker容器。</li>
+<li>现在DockerMachine的产生简化了这一过程，让你可以使用一条命令在你的计算机，公有云平台以及私有数据中心创建及管理Docker主机。</li>
+</ul>
+<h4 id="安装Docker-Machine"><a href="#安装Docker-Machine" class="headerlink" title="安装Docker Machine"></a>安装Docker Machine</h4><p>在macOS和Windows上，Machine会随着<a href="https://docs.docker.com/docker-for-mac/install/" target="_blank" rel="noopener">Docker for Mac</a>, <a href="https://docs.docker.com/docker-for-windows/install/" target="_blank" rel="noopener">Docker for Windows</a>, 或 <a href="https://docs.docker.com/toolbox/overview/" target="_blank" rel="noopener">Docker Toolbox</a>一起安装.</p>
+<h5 id="独立安装Docker-Machine"><a href="#独立安装Docker-Machine" class="headerlink" title="独立安装Docker Machine"></a>独立安装Docker Machine</h5><p>这里以ubuntu 18.04为例，其他系统安装参见官方文档<a href="https://docs.docker.com/machine/overview/" target="_blank" rel="noopener">Docker Machine</a><br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># base=https://github.com/docker/machine/releases/download/v0.16.0 &amp;&amp;</span></span><br><span class="line">  curl -L <span class="variable">$base</span>/docker-machine-$(uname -s)-$(uname -m) &gt;/tmp/docker-machine &amp;&amp;</span><br><span class="line">  sudo install /tmp/docker-machine /usr/<span class="built_in">local</span>/bin/docker-machine</span><br></pre></td></tr></table></figure></p>
+<p>查看 Machine version：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># docker-machine version</span></span><br><span class="line">docker-machine version 0.16.0, build 702c267f</span><br></pre></td></tr></table></figure></p>
+<h5 id="在远程主机上安装-Docker"><a href="#在远程主机上安装-Docker" class="headerlink" title="在远程主机上安装 Docker"></a>在远程主机上安装 Docker</h5><p>在使用 docker-machine 进行远程安装前我们需要做一些前提准备工作：</p>
+<h6 id="在目标主机上启用root或创建具有sudo权限的普通用户"><a href="#在目标主机上启用root或创建具有sudo权限的普通用户" class="headerlink" title="在目标主机上启用root或创建具有sudo权限的普通用户"></a>在目标主机上启用root或创建具有sudo权限的普通用户</h6><p>启用root ssh 登陆<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#允许root ssh登录</span></span><br><span class="line">$ sudo -i</span><br><span class="line">$ sed -i -e <span class="string">"s/PermitRootLogin without-password/PermitRootLogin yes/g"</span> /etc/ssh/sshd_config</span><br><span class="line"><span class="comment">#重启SSH</span></span><br><span class="line">$ service ssh restart</span><br><span class="line"><span class="comment">#按提示设置root用户密码</span></span><br><span class="line">$ passwd root</span><br></pre></td></tr></table></figure></p>
+<p>或者创建一个具有sudo权限的普通用户,这里以创建一个用户为例<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo adduser worker1</span><br><span class="line">$ sudo usermod -a -G sudo worker1</span><br></pre></td></tr></table></figure></p>
+<h6 id="配置用户ssh免密登录"><a href="#配置用户ssh免密登录" class="headerlink" title="配置用户ssh免密登录"></a>配置用户ssh免密登录</h6><p>启用visiblepw<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ sudo visudo</span><br><span class="line"><span class="comment">#在文件前添加</span></span><br><span class="line">Defaults   visiblepw</span><br><span class="line"><span class="comment">#按Ctrl+O保存 Ctrl+X退出</span></span><br></pre></td></tr></table></figure></p>
+<p>编辑nopasswdsudo<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ vim /etc/sudoers.d/nopasswdsudo</span><br><span class="line">在文件中添加</span><br><span class="line">worker1 ALL=(ALL) NOPASSWD : ALL</span><br></pre></td></tr></table></figure></p>
+<h6 id="把本地用户的-ssh-public-key-添加到目标主机上"><a href="#把本地用户的-ssh-public-key-添加到目标主机上" class="headerlink" title="把本地用户的 ssh public key 添加到目标主机上"></a>把本地用户的 ssh public key 添加到目标主机上</h6><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">$ ssh-copy-id -i ~/.ssh/id_rsa.pub worker1@192.168.48.202</span><br><span class="line"><span class="comment"># 若用户下未生成过key,使用如下命令生成后再执行上条命令</span></span><br><span class="line">$  ssh-keygen</span><br><span class="line">Generating public/private rsa key pair.</span><br><span class="line">Enter file <span class="keyword">in</span> <span class="built_in">which</span> to save the key (/root/.ssh/id_rsa): </span><br><span class="line">Created directory <span class="string">'/root/.ssh'</span>.</span><br><span class="line">Enter passphrase (empty <span class="keyword">for</span> no passphrase): </span><br><span class="line">Enter same passphrase again: </span><br><span class="line">Your identification has been saved <span class="keyword">in</span> /root/.ssh/id_rsa.</span><br><span class="line">Your public key has been saved <span class="keyword">in</span> /root/.ssh/id_rsa.pub.</span><br><span class="line">The key fingerprint is:</span><br><span class="line">SHA256:xW6kJVWFItg6Lirdi7G1Jte8+lD3FaA/7BSedCICKt0 root@ubuntu</span><br><span class="line">The key<span class="string">'s randomart image is:</span></span><br><span class="line"><span class="string">+---[RSA 2048]----+</span></span><br><span class="line"><span class="string">|    .  o  o..o.  |</span></span><br><span class="line"><span class="string">| . o .. o+...    |</span></span><br><span class="line"><span class="string">|. o E ..+.O.o    |</span></span><br><span class="line"><span class="string">| .    o. &amp; = .   |</span></span><br><span class="line"><span class="string">|     ...S X .    |</span></span><br><span class="line"><span class="string">|    .... = o     |</span></span><br><span class="line"><span class="string">| ..oo+    o      |</span></span><br><span class="line"><span class="string">|. +=+oo          |</span></span><br><span class="line"><span class="string">| .o+++o.         |</span></span><br><span class="line"><span class="string">+----[SHA256]-----+</span></span><br></pre></td></tr></table></figure>
+<h6 id="在本地主机执行安装命令"><a href="#在本地主机执行安装命令" class="headerlink" title="在本地主机执行安装命令"></a>在本地主机执行安装命令</h6><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">$ docker-machine create -d generic \</span><br><span class="line">    --generic-ip-address=192.168.48.202 \</span><br><span class="line">    --generic-ssh-user=worker1 \</span><br><span class="line">    --generic-ssh-key ~/.ssh/id_rsa \</span><br><span class="line">    machine-worker1</span><br><span class="line">Running pre-create checks...</span><br><span class="line">Creating machine...</span><br><span class="line">(machine-worker1) Importing SSH key...</span><br><span class="line">Waiting <span class="keyword">for</span> machine to be running, this may take a few minutes...</span><br><span class="line">Detecting operating system of created instance...</span><br><span class="line">Waiting <span class="keyword">for</span> SSH to be available...</span><br><span class="line">Detecting the provisioner...</span><br><span class="line">Provisioning with ubuntu(systemd)...</span><br><span class="line">Installing Docker...</span><br><span class="line">Copying certs to the <span class="built_in">local</span> machine directory...</span><br><span class="line">Copying certs to the remote machine...</span><br><span class="line">Setting Docker configuration on the remote daemon...</span><br><span class="line">Checking connection to Docker...</span><br><span class="line">Docker is up and running!</span><br><span class="line">To see how to connect your Docker Client to the Docker Engine running on this virtual machine, run: docker-machine env machine-worker1</span><br></pre></td></tr></table></figure>
+<p>create 命令创建虚拟主机并安装 Docker<br>-d –driver 的简写形式，主要用来指定使用什么驱动程序来创建目标主机<br>另外支持的驱动详见:<a href="https://docs.docker.com/machine/drivers/" target="_blank" rel="noopener">Machine drivers</a><br>本例中使用 generic 下面以 –generic 开头的三个参数主要是指定操作的目标主机和使用的账户<br>machine-worker1 参数是虚拟机的名称</p>
+<p>检查安装结果<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ docker-machine ls</span><br><span class="line">NAME              ACTIVE   DRIVER    STATE     URL                         SWARM   DOCKER     ERRORS</span><br><span class="line">machine-worker1   -        generic   Running   tcp://192.168.48.202:2376           v18.09.0</span><br></pre></td></tr></table></figure></p>
+<p>使用本地的客户端连接远程的服务器<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">eval</span> $( docker-machine env machine-worker1)</span><br></pre></td></tr></table></figure></p>
+<p>这样就可以愉快的在本地管理远端的docker了<br>另外docker-machine支持的命令如下：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">Commands:</span><br><span class="line">  active                Print <span class="built_in">which</span> machine is active</span><br><span class="line">  config                Print the connection config <span class="keyword">for</span> machine</span><br><span class="line">  create                Create a machine</span><br><span class="line">  env                   Display the commands to <span class="built_in">set</span> up the environment <span class="keyword">for</span> the Docker client</span><br><span class="line">  inspect               Inspect information about a machine</span><br><span class="line">  ip                    Get the IP address of a machine</span><br><span class="line">  <span class="built_in">kill</span>                  Kill a machine</span><br><span class="line">  ls                    List machines</span><br><span class="line">  provision             Re-provision existing machines</span><br><span class="line">  regenerate-certs      Regenerate TLS Certificates <span class="keyword">for</span> a machine</span><br><span class="line">  restart               Restart a machine</span><br><span class="line">  rm                    Remove a machine</span><br><span class="line">  ssh                   Log into or run a <span class="built_in">command</span> on a machine with SSH.</span><br><span class="line">  scp                   Copy files between machines</span><br><span class="line">  mount                 Mount or unmount a directory from a machine with SSHFS.</span><br><span class="line">  start                 Start a machine</span><br><span class="line">  status                Get the status of a machine</span><br><span class="line">  stop                  Stop a machine</span><br><span class="line">  upgrade               Upgrade a machine to the latest version of Docker</span><br><span class="line">  url                   Get the URL of a machine</span><br><span class="line">  version               Show the Docker Machine version or a machine docker version</span><br><span class="line">  <span class="built_in">help</span>                  Shows a list of commands or <span class="built_in">help</span> <span class="keyword">for</span> one <span class="built_in">command</span></span><br></pre></td></tr></table></figure></p>
+<p> 对于远程管理来说，SSH 的支持是必不可少的！Docker Machine 当然也尽职尽责的完成了任务：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker-machine ssh machine-worker1</span><br></pre></td></tr></table></figure></p>
+<p>执行上面的命令，瞬间穿越至目标主机，双击666</p>
+<h3 id="Docker-Compose"><a href="#Docker-Compose" class="headerlink" title="Docker Compose"></a>Docker Compose</h3><p>Docker Compose 是 Docker 官方编排（Orchestration）项目之一，负责快速在集群中部署分布式应用。<br>实际项目中我们不可能就一个docker容器走天下，正常都是要多个容器合作完成任务，如果我们一个一个容器去启动，势必很麻烦头大，docker-compose 可以解决我们的问题，下面简单实例以springboot服务+mysql数据库服务<br>项目结构如下，</p>
+<ul>
+<li>demo 是我们的springboot web工程</li>
+<li>mysql目录，可以加一下针对mysql的配置</li>
+<li>docker-compose.yaml 猪脚，描述如何构建整个服务<br><img src="http://static.nsoft.vip/18-12-21/53100783.jpg" alt=""></li>
+</ul>
+<h4 id="docker-compose-yaml-配置文件"><a href="#docker-compose-yaml-配置文件" class="headerlink" title="docker-compose.yaml 配置文件"></a>docker-compose.yaml 配置文件</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">version: <span class="string">'3'</span></span><br><span class="line">services:</span><br><span class="line">  mysql:</span><br><span class="line">   container_name: demo-mysql</span><br><span class="line">   image: mysql/mysql-server:5.7</span><br><span class="line">   volumes:  </span><br><span class="line">      - ./mysql/data:/var/lib/mysql</span><br><span class="line">   environment:</span><br><span class="line">    MYSQL_DATABASE: demo</span><br><span class="line">    MYSQL_ROOT_PASSWORD: root</span><br><span class="line">    MYSQL_ROOT_HOST: <span class="string">'%'</span></span><br><span class="line">   ports:</span><br><span class="line">   - <span class="string">"3306:3306"</span></span><br><span class="line">   restart: always</span><br><span class="line">    </span><br><span class="line">  demo:</span><br><span class="line">    restart: always</span><br><span class="line">    build: ./demo</span><br><span class="line">    working_dir: /demo</span><br><span class="line">    volumes:</span><br><span class="line">      - /etc/localtime:/etc/localtime:ro</span><br><span class="line">      - ./demo:/demo</span><br><span class="line">      - ~/.m2:/root/.m2</span><br><span class="line">    ports:</span><br><span class="line">      - <span class="string">"8080:8080"</span></span><br><span class="line">    depends_on:</span><br><span class="line">      - mysql</span><br><span class="line">    <span class="built_in">command</span>: mvn clean spring-boot:run -Dspring-boot.run.profiles=docker</span><br></pre></td></tr></table></figure>
+<ul>
+<li>version: ‘3’： 表示使用第三代语法来构建 docker-compose.yaml 文件。</li>
+<li>services: 用来表示 compose 需要启动的服务，我们可以看出此文件中有2个服务分别为：mysql、demo。</li>
+<li>container_name: 容器名称</li>
+<li>environment: 此节点下的信息会当作环境变量传入容器，此示例中 mysql 服务配置了数据库、密码和权限信息。</li>
+<li>ports: 表示对外开放的端口</li>
+<li>restart: always 表示如果服务启动不成功会一直尝试。</li>
+<li>volumes: 加载本地目录下的配置文件到容器目标地址下</li>
+<li>depends_on：可以配置依赖服务，表示需要先启动 depends_on 下面的服务后，再启动本服务。</li>
+<li>command: mvn clean spring-boot:run -Dspring-boot.run.profiles=docker: 表示以这个命令来启动项目，-Dspring-boot.run.profiles=docker表示使用 application-docker.properties文件配置信息进行启动。</li>
+</ul>
+<h4 id="Spring-Boot-项目配置"><a href="#Spring-Boot-项目配置" class="headerlink" title="Spring Boot 项目配置"></a>Spring Boot 项目配置</h4><p>在demo 目录下也就是和pom.xm文件同级添加Dockerfile文件，文件内容如下：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">FROM maven:3.5-jdk-8</span><br></pre></td></tr></table></figure></p>
+<p>只要这一句，依赖于基础镜像maven3.5和jdk1.8。<br>因为在docker-compose.yaml文件设置了项目启动命令，这里不需要再添加启动命令</p>
+<p>application-docker.properties 添加针对于docker的配置：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver</span><br><span class="line">spring.datasource.url=jdbc:mysql://mysql:3306/demo?useUnicode=<span class="literal">true</span>&amp;characterEncoding=utf8&amp;serverTimezone=GMT%2B8</span><br><span class="line">spring.datasource.username=root</span><br><span class="line">spring.datasource.password=root</span><br></pre></td></tr></table></figure></p>
+<h4 id="项目部署"><a href="#项目部署" class="headerlink" title="项目部署"></a>项目部署</h4><p>以下命令在docker-compose.yaml 同级目录执行<br>启动服务：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker-compose up --build</span><br></pre></td></tr></table></figure></p>
+<p><img src="http://static.nsoft.vip/18-12-21/43057608.jpg" alt=""><br>停止服务:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker-compose down</span><br></pre></td></tr></table></figure></p>
+<p><img src="http://static.nsoft.vip/18-12-21/55843374.jpg" alt=""><br>查看项目中目前的所有容器<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker-compose ps</span><br></pre></td></tr></table></figure></p>
+<p><img src="http://static.nsoft.vip/18-12-21/76050008.jpg" alt=""><br>就是这么简单。</p>
+<p><a href="https://github.com/yaonew/docker-training/tree/master/docker-compose" target="_blank" rel="noopener">项目GitHub源码</a></p>
+<h3 id="Docker-Swarm"><a href="#Docker-Swarm" class="headerlink" title="Docker Swarm"></a>Docker Swarm</h3><p>Swarm是Docker官方提供的一款集群管理工具，其主要作用是把若干台Docker主机抽象为一个整体，并且通过一个入口统一管理这些Docker主机上的各种Docker资源。Swarm和Kubernetes比较类似，但是更加轻，具有的功能也较kubernetes更少一些。Docker Swarm 和 Docker Compose 一样，都是 Docker 官方容器编排项目，但不同的是，Docker Compose 是一个在单个服务器或主机上创建多个容器的工具，而 Docker Swarm 则可以在多个服务器或主机上创建容器集群服务，对于微服务的部署，显然 Docker Swarm 会更加适合。</p>
+<h4 id="Docker-Swarm的获取"><a href="#Docker-Swarm的获取" class="headerlink" title="Docker Swarm的获取"></a>Docker Swarm的获取</h4><p>从Docker(1.12版本以后) swarm 已整体集成在Docker Engine中，这里我们只讨论新版本中docker swarm的使用</p>
+<h4 id="创建一个Swarm的集群"><a href="#创建一个Swarm的集群" class="headerlink" title="创建一个Swarm的集群"></a>创建一个Swarm的集群</h4><p>详细参数参见官方文档<a href="https://docs.docker.com/engine/reference/commandline/swarm_init/#options" target="_blank" rel="noopener">https://docs.docker.com/engine/reference/commandline/swarm_init/#options</a>，<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker swarm init [OPTIONS]</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ docker swarm init --listen-addr 0.0.0.0:2377 --advertise-addr 192.168.48.244</span><br><span class="line">Swarm initialized: current node (unegtfborf8ldmn41h89rttzf) is now a manager.</span><br><span class="line"></span><br><span class="line">To add a worker to this swarm, run the following <span class="built_in">command</span>:</span><br><span class="line"></span><br><span class="line">    docker swarm join --token SWMTKN-1-2j9t0uf0a442hks10f4l4bp9fz01j5wkr81twl3mgjyl6fuvva-5i1itkmhe4tehzbqhas4wztns 192.168.48.244:2377</span><br><span class="line"></span><br><span class="line">To add a manager to this swarm, run <span class="string">'docker swarm join-token manager'</span> and follow the instructions.</span><br></pre></td></tr></table></figure>
+<p>–listen-addr 指出的是这个集群暴露给外界调用的HTTPAPI的socket地址<br>–advertise-addr 标志配置了管理节点的 IP 地址。如果你的机器只有一张网卡，可以省略。</p>
+<h4 id="Swarm的集群管理"><a href="#Swarm的集群管理" class="headerlink" title="Swarm的集群管理"></a>Swarm的集群管理</h4><h5 id="向Swarm的集群中添加节点"><a href="#向Swarm的集群中添加节点" class="headerlink" title="向Swarm的集群中添加节点"></a>向Swarm的集群中添加节点</h5><p>分别在第二台、第三台主机上执行以上生成的 docker swarm join –token命令<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 输出添加一个worker节点命令</span></span><br><span class="line">$ docker swarm join-token worker</span><br><span class="line">To add a worker to this swarm, run the following <span class="built_in">command</span>:</span><br><span class="line"></span><br><span class="line">    docker swarm join --token SWMTKN-1-2j9t0uf0a442hks10f4l4bp9fz01j5wkr81twl3mgjyl6fuvva-5i1itkmhe4tehzbqhas4wztns 192.168.48.244:2377</span><br><span class="line"><span class="comment"># 输出添加一个manager节点命令</span></span><br><span class="line">$ docker swarm join-token manager</span><br><span class="line">To add a manager to this swarm, run the following <span class="built_in">command</span>:</span><br><span class="line"></span><br><span class="line">    docker swarm join --token SWMTKN-1-2j9t0uf0a442hks10f4l4bp9fz01j5wkr81twl3mgjyl6fuvva-0f54w8ra5ldg27b8yjwe4kg9r 192.168.48.244:2377</span><br></pre></td></tr></table></figure></p>
+<p>为了不用登陆到每台主机中去执行docker swarm join –token命令，这样太麻烦，我们可以结合上面的docker-machine 命令使用，通过docker-machine create添加两台远程主机<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ docker-machine ls</span><br><span class="line">NAME              ACTIVE   DRIVER    STATE     URL                         SWARM   DOCKER     ERRORS</span><br><span class="line">machine-worker1   -        generic   Running   tcp://192.168.48.202:2376           v18.09.0   </span><br><span class="line">machine-worker2   -        generic   Running   tcp://192.168.48.203:2376           v18.09.0</span><br></pre></td></tr></table></figure></p>
+<p>分别将machine-worker1，machine-worker2 作为一个节点添加到swarm集群，执行如下命令<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$  docker-machine ssh machine-worker1 <span class="string">"sudo docker swarm join --token SWMTKN-1-2j9t0uf0a442hks10f4l4bp9fz01j5wkr81twl3mgjyl6fuvva-5i1itkmhe4tehzbqhas4wztns 192.168.48.244:2377"</span></span><br><span class="line">This node joined a swarm as a worker.</span><br><span class="line">$  docker-machine ssh machine-worker2 <span class="string">"sudo docker swarm join --token SWMTKN-1-2j9t0uf0a442hks10f4l4bp9fz01j5wkr81twl3mgjyl6fuvva-5i1itkmhe4tehzbqhas4wztns 192.168.48.244:2377"</span></span><br><span class="line">This node joined a swarm as a worker.</span><br></pre></td></tr></table></figure></p>
+<p>无需登录远程主机，这样两个节点就添加进swarm集群了，查看下当前swarm集群中的节点<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$  docker node ls</span><br><span class="line">ID                            HOSTNAME            STATUS              AVAILABILITY        MANAGER STATUS      ENGINE VERSION</span><br><span class="line">53bbepypujpr5qi5zzspre7el *   master              Ready               Active              Leader              18.09.0</span><br><span class="line">bifyoaqegffgcmooulu749co5     worker1             Ready               Active                                  18.09.0</span><br><span class="line">d94ktuzewdxl9nkszbibilj24     worker2             Ready               Active                                  18.09.0</span><br></pre></td></tr></table></figure></p>
+<p>这样我们就得到了一个由三个节点组成的小集群，manager本身也自动作为worker一员加入集群</p>
+<h5 id="节点更新"><a href="#节点更新" class="headerlink" title="节点更新"></a>节点更新</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ docker node update --availability drain worker2</span><br><span class="line">worker2</span><br></pre></td></tr></table></figure>
+<p>可以手动将某个节点的可用性设置为Drain或者active，比如这里将名为worker2的节点设置为drain了之后，可以看到在docker node ls 中出现的新信息<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ docker node ls</span><br><span class="line">ID                            HOSTNAME            STATUS              AVAILABILITY        MANAGER STATUS      ENGINE VERSION</span><br><span class="line">53bbepypujpr5qi5zzspre7el *   master              Ready               Active              Leader              18.09.0</span><br><span class="line">bifyoaqegffgcmooulu749co5     worker1             Ready               Active                                  18.09.0</span><br><span class="line">d94ktuzewdxl9nkszbibilj24     worker2             Ready               Drain                                   18.09.0</span><br></pre></td></tr></table></figure></p>
+<h5 id="删除节点"><a href="#删除节点" class="headerlink" title="删除节点"></a>删除节点</h5><p>执行命令 docker swarm leave –force<br>这里我们将worker2节点从swarm 集群中移除：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ docker-machine ssh machine-worker2 <span class="string">"sudo docker swarm leave --force"</span> </span><br><span class="line">Node left the swarm.</span><br></pre></td></tr></table></figure></p>
+<h4 id="构建服务"><a href="#构建服务" class="headerlink" title="构建服务"></a>构建服务</h4><p>在swarm集群中，管理节点是集群中唯一可以执行命令的机器，或授权其他机器作为manager加入群集,worker只是在那里提供服务能力，并且没有权力告诉任何其他机器它能做什么和不能做什么，为了构建下面的集群服务，我们再次执行上面的添加节点操作把worker2节点添加进集群。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ docker-machine ssh machine-worker2 <span class="string">"sudo docker swarm join --token SWMTKN-1-2j9t0uf0a442hks10f4l4bp9fz01j5wkr81twl3mgjyl6fuvva-5i1itkmhe4tehzbqhas4wztns 192.168.48.244:2377"</span></span><br><span class="line">This node joined a swarm as a worker.</span><br></pre></td></tr></table></figure></p>
+<p>在管理节点执行构建服务命令：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">$ docker service create -p 4000:80 --replicas 5 --name helloswarm yaonew/hellowpy:v1</span><br><span class="line">image yaonew/hellowpy:v1 could not be accessed on a registry to record</span><br><span class="line">its digest. Each node will access yaonew/hellowpy:v1 independently,</span><br><span class="line">possibly leading to different nodes running different</span><br><span class="line">versions of the image.</span><br><span class="line"></span><br><span class="line">h926sud2306kg0lirv0dcydwy</span><br><span class="line">overall progress: 5 out of 5 tasks </span><br><span class="line">1/5: running   [==================================================&gt;] </span><br><span class="line">2/5: running   [==================================================&gt;] </span><br><span class="line">3/5: running   [==================================================&gt;] </span><br><span class="line">4/5: running   [==================================================&gt;] </span><br><span class="line">5/5: running   [==================================================&gt;] </span><br><span class="line">verify: Service converged</span><br></pre></td></tr></table></figure></p>
+<p>docker service create 命令创建服务<br>-p 端口映射，将容器80端口映射到宿主机4000端口上<br>–name 标志将服务命名为helloswarm<br>–replicas 标志指定了期望状态为 5 个运行示例<br>yaonew/hellowpy:v1 镜像 这里使用了自己构建的镜像</p>
+<h5 id="查看服务列表"><a href="#查看服务列表" class="headerlink" title="查看服务列表"></a>查看服务列表</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ docker service ls</span><br><span class="line">ID                  NAME                MODE                REPLICAS            IMAGE                PORTS</span><br><span class="line">h926sud2306k        helloswarm          replicated          5/5                 yaonew/hellowpy:v1</span><br></pre></td></tr></table></figure>
+<h5 id="查看服务详情"><a href="#查看服务详情" class="headerlink" title="查看服务详情"></a>查看服务详情</h5><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ docker service ps helloswarm </span><br><span class="line">ID                  NAME                IMAGE                NODE                DESIRED STATE       CURRENT STATE            ERROR               PORTS</span><br><span class="line">kderyu36u33v        helloswarm.1        yaonew/hellowpy:v1   worker2             Running             Running 15 minutes ago                       </span><br><span class="line">quly9g70410v        helloswarm.2        yaonew/hellowpy:v1   master              Running             Running 15 minutes ago                       </span><br><span class="line">frzcgbjkogia        helloswarm.3        yaonew/hellowpy:v1   worker2             Running             Running 15 minutes ago                       </span><br><span class="line">jr7xux73fpmo        helloswarm.4        yaonew/hellowpy:v1   master              Running             Running 15 minutes ago                       </span><br><span class="line">xpqar72dplms        helloswarm.5        yaonew/hellowpy:v1   worker1             Running             Running 15 minutes ago   </span><br><span class="line">``` </span><br><span class="line">可以看到swarm集群根据算法将期望运行的5个实例分别运行在master、worker1、worker2上，通过浏览器访问http://192.168.48.244:4000 可以看出swarm自动为我们做了负载均衡，每个请求，以循环方式选择5个实例中的一个来响应。</span><br><span class="line"></span><br><span class="line"><span class="comment">##### 伸缩服务</span></span><br><span class="line">``` bash</span><br><span class="line">$ docker service scale helloswarm=10</span><br></pre></td></tr></table></figure>
+<p>通过以上命令可以迅速将helloswarm服务提升至10个实例，之前已经启动的5个实例不受影响，将新构建5个实例，查看服务详情。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">$ docker service ps helloswarm </span><br><span class="line">ID                  NAME                IMAGE                NODE                DESIRED STATE       CURRENT STATE            ERROR               PORTS</span><br><span class="line">vhyxlovgvjdj        helloswarm.1        yaonew/hellowpy:v1   worker1             Running             Running 9 minutes ago                        </span><br><span class="line">my8fv4gf5pxg        helloswarm.2        yaonew/hellowpy:v1   worker2             Running             Running 9 minutes ago                        </span><br><span class="line">x8p9nuqpmz0p        helloswarm.3        yaonew/hellowpy:v1   master              Running             Running 9 minutes ago                        </span><br><span class="line">zlx5o9m7jyyf        helloswarm.4        yaonew/hellowpy:v1   worker1             Running             Running 9 minutes ago                        </span><br><span class="line">4rbcagnwqn4t        helloswarm.5        yaonew/hellowpy:v1   worker2             Running             Running 9 minutes ago                        </span><br><span class="line">tv4x55ihaq7q        helloswarm.6        yaonew/hellowpy:v1   master              Running             Running 24 seconds ago                       </span><br><span class="line">wvr1dys8psg0        helloswarm.7        yaonew/hellowpy:v1   master              Running             Running 22 seconds ago                       </span><br><span class="line">u7uz9lq8l2cd        helloswarm.8        yaonew/hellowpy:v1   master              Running             Running 23 seconds ago                       </span><br><span class="line">xyt77whcy911        helloswarm.9        yaonew/hellowpy:v1   worker2             Running             Running 30 seconds ago                       </span><br><span class="line">ldi0b1atvzz2        helloswarm.10       yaonew/hellowpy:v1   worker1             Running             Running 30 seconds ago</span><br></pre></td></tr></table></figure></p>
+<h4 id="删除swarm上的服务"><a href="#删除swarm上的服务" class="headerlink" title="删除swarm上的服务"></a>删除swarm上的服务</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker service rm helloswarm</span><br></pre></td></tr></table></figure>
+<h4 id="通过YAML文件构建服务"><a href="#通过YAML文件构建服务" class="headerlink" title="通过YAML文件构建服务"></a>通过YAML文件构建服务</h4><p>YAML文件，用于定义Docker容器在生产中的行为方式，yaonew/hellowpy:v1 我们自己的镜像，请确保已推送到远程仓库，下面新建docker-compose.yml文件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">version: <span class="string">"3"</span></span><br><span class="line">services:</span><br><span class="line">  web:</span><br><span class="line">    <span class="comment"># replace username/repo:tag with your name and image details</span></span><br><span class="line">    image: yaonew/hellowpy:v1</span><br><span class="line">    deploy:</span><br><span class="line">      replicas: 5</span><br><span class="line">      resources:</span><br><span class="line">        limits:</span><br><span class="line">          cpus: <span class="string">"0.1"</span></span><br><span class="line">          memory: 50M</span><br><span class="line">      restart_policy:</span><br><span class="line">        condition: on-failure</span><br><span class="line">    ports:</span><br><span class="line">      - <span class="string">"4000:80"</span></span><br><span class="line">    networks:</span><br><span class="line">      - webnet</span><br><span class="line">networks:</span><br><span class="line">  webnet:</span><br></pre></td></tr></table></figure>
+<p>这个docker-compose.yml文件告诉Docker执行以下操作：<br>从注册中心中提取镜像。<br>以此镜像运行5个实例作为一个服务，服务名为web，限制每个实例使用最多10％的CPU（所有核心）和50MB的RAM。<br>如果如果容器出错，立即重启。<br>将主机上的端口4000映射到Web的端口80。<br>指示Web容器通过称为webnet的负载平衡网络共享端口80。<br>默认使用Webnet网络（负载平衡网络）。</p>
+<p>通过yaml文件省去了在命令行添加太多参数的烦恼，运行服务<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ docker stack deploy -c docker-compose.yml helloswarm</span><br><span class="line">Creating network helloswarm_webnet</span><br><span class="line">Creating service helloswarm_web</span><br></pre></td></tr></table></figure></p>
+<p>这里创建了一个网络名称为：helloswarm_webnet 创建了一个服务名称：helloswarm_web<br>查看服务详情<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">docker service ps helloswarm_web </span><br><span class="line">ID                  NAME                IMAGE                NODE                DESIRED STATE       CURRENT STATE                    ERROR               PORTS</span><br><span class="line">v3tzalw6trzg        helloswarm_web.1      yaonew/hellowpy:v1   worker2             Running             Starting 8 seconds ago                               </span><br><span class="line">xa37injkdiov        helloswarm_web.2      yaonew/hellowpy:v1   master              Running             Starting 4 seconds ago                               </span><br><span class="line">y81yo07gzsl7        helloswarm_web.3      yaonew/hellowpy:v1   worker1             Running             Running less than a second ago                       </span><br><span class="line">2ujbxosbiu2z        helloswarm_web.4      yaonew/hellowpy:v1   worker2             Running             Starting 8 seconds ago                               </span><br><span class="line">1fa0jsr09v5i        helloswarm_web.5      yaonew/hellowpy:v1   master              Running             Starting 4 seconds ago</span><br></pre></td></tr></table></figure></p>
+<p>查看容器信息<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 各主机查看启动容器id</span></span><br><span class="line">$ docker container ls -q</span><br><span class="line"><span class="comment"># 查看所有容器</span></span><br><span class="line">$ docker ps -a</span><br></pre></td></tr></table></figure></p>
+<p>扩展应用<br>我们可以通过更改docker-compose.yml文件，并重新运行docker stack deploy命令来扩展应用程序：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">docker stack deploy -c docker-compose.yml helloswarm</span><br><span class="line">Updating service helloswarm_web (id: xa3th1y6lwz45ca3c0dpgu872)</span><br><span class="line">image yaonew/hellowpy:v1 could not be accessed on a registry to record</span><br><span class="line">its digest. Each node will access yaonew/hellowpy:v1 independently,</span><br><span class="line">possibly leading to different nodes running different</span><br><span class="line">versions of the image.</span><br></pre></td></tr></table></figure></p>
+<p>Docker执行就地更新，无需杀死任何容器。<br>现在，重新运行docker container ls -q以查看已重新配置的已部署实例。 如果增加实例数量，则会启动更多任务，从而启动更多容器。</p>
+<p>清理退出<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker stack rm helloswarm </span><br><span class="line">Removing service helloswarm_web</span><br><span class="line">Removing network helloswarm_webnet</span><br></pre></td></tr></table></figure></p>
+<p><a href="https://github.com/yaonew/docker-training/tree/master/docker-swarm" target="_blank" rel="noopener">项目GitHub源码</a></p>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><p><a href="https://docs.docker.com/machine/overview/" target="_blank" rel="noopener">https://docs.docker.com/machine/overview/</a><br><a href="http://blog.51cto.com/hashlinux/1772507" target="_blank" rel="noopener">http://blog.51cto.com/hashlinux/1772507</a><br><a href="https://www.cnblogs.com/sparkdev/p/7044950.html" target="_blank" rel="noopener">https://www.cnblogs.com/sparkdev/p/7044950.html</a><br><a href="https://docs.docker.com/compose/overview/" target="_blank" rel="noopener">https://docs.docker.com/compose/overview/</a><br><a href="https://docs.docker.com/engine/reference/commandline/swarm/" target="_blank" rel="noopener">https://docs.docker.com/engine/reference/commandline/swarm/</a><br><a href="https://www.cnblogs.com/franknihao/p/8490416.html" target="_blank" rel="noopener">https://www.cnblogs.com/franknihao/p/8490416.html</a><br><a href="https://blog.csdn.net/u011936655/article/details/81147315" target="_blank" rel="noopener">https://blog.csdn.net/u011936655/article/details/81147315</a></p>
+
+      
+    </div>
+
+    
+	
+	<!-- add 2018-12-29 -->
+    <div>
+      
+        <!-- add 2018-12-29 -->
+<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+      
+    </div>
+
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="http://static.nsoft.vip/qrcode_for_tec.jpg" alt="Alex.Yao wechat" style="width: 200px; max-width: 100%;">
+    <div>欢迎您扫一扫上面的微信公众号，订阅我的博客！</div>
+</div>
+
+      </div>
+    
+
+    
+       
+    
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>坚持原创技术分享，您的支持将鼓励我继续创作！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="http://static.nsoft.vip/weixin.png" alt="Alex.Yao 微信支付">
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="http://static.nsoft.vip/alipay.jpg" alt="Alex.Yao 支付宝">
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        
+
+
+
+  
+
+
+
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>Alex.Yao</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    
+    <a href="http://nsoft.vip/2018/12/05/181205-Docker之旅-Docker图形化管理和监控/" title="Docker之旅-Docker图形化管理和监控(一)">http://nsoft.vip/2018/12/05/181205-Docker之旅-Docker图形化管理和监控/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！</li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/微服务/" rel="tag"># 微服务</a>
+          
+            <a href="/tags/docker/" rel="tag"># docker</a>
+          
+            <a href="/tags/Shipyard/" rel="tag"># Shipyard</a>
+          
+            <a href="/tags/cAdvisor/" rel="tag"># cAdvisor</a>
+          
+            <a href="/tags/Portainer/" rel="tag"># Portainer</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/11/29/181129-Git常用命令/" rel="next" title="Git常用命令备忘录">
+                <i class="fa fa-chevron-left"></i> Git常用命令备忘录
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/12/20/181220-Docker之旅-Docker图形化管理和监控(二)/" rel="prev" title="Docker之旅-Docker图形化管理和监控(二)">
+                Docker之旅-Docker图形化管理和监控(二) <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="http://static.nsoft.vip/head.jpg" alt="Alex.Yao">
+            
+              <p class="site-author-name" itemprop="name">Alex.Yao</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">25</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">14</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">33</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/yaonew" title="GitHub &rarr; https://github.com/yaonew" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="http://weibo.com/523483907" title="Weibo &rarr; http://weibo.com/523483907" rel="noopener" target="_blank"><i class="fa fa-fw fa-weibo"></i>Weibo</a>
+                </span>
+              
+            </div>
+          
+
+          
+             <div class="cc-license motion-element" itemprop="license">
+              
+                
+              
+              
+              
+              <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+             </div>
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-block">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://macshuo.com/" title="http://macshuo.com/" rel="noopener" target="_blank">MacTalk</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.yinwang.org/" title="http://www.yinwang.org/" rel="noopener" target="_blank">王垠</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.ruanyifeng.com/" title="http://www.ruanyifeng.com/" rel="noopener" target="_blank">阮一峰</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://ftqq.com/" title="http://ftqq.com/" rel="noopener" target="_blank">方糖气球</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://ityouknow.com/" title="http://ityouknow.com/" rel="noopener" target="_blank">ITyouknow</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.fengerzh.com/" title="https://www.fengerzh.com/" rel="noopener" target="_blank">日新亭</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://mazhuang.org/" title="https://mazhuang.org/" rel="noopener" target="_blank">码志</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.why-dong.com/" title="http://www.why-dong.com/" rel="noopener" target="_blank">村农</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Docker管理之官方三剑客"><span class="nav-number">1.</span> <span class="nav-text">Docker管理之官方三剑客</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Docker-Machine"><span class="nav-number">1.1.</span> <span class="nav-text">Docker Machine</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#安装Docker-Machine"><span class="nav-number">1.1.1.</span> <span class="nav-text">安装Docker Machine</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#独立安装Docker-Machine"><span class="nav-number">1.1.1.1.</span> <span class="nav-text">独立安装Docker Machine</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#在远程主机上安装-Docker"><span class="nav-number">1.1.1.2.</span> <span class="nav-text">在远程主机上安装 Docker</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#在目标主机上启用root或创建具有sudo权限的普通用户"><span class="nav-number">1.1.1.2.1.</span> <span class="nav-text">在目标主机上启用root或创建具有sudo权限的普通用户</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#配置用户ssh免密登录"><span class="nav-number">1.1.1.2.2.</span> <span class="nav-text">配置用户ssh免密登录</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#把本地用户的-ssh-public-key-添加到目标主机上"><span class="nav-number">1.1.1.2.3.</span> <span class="nav-text">把本地用户的 ssh public key 添加到目标主机上</span></a></li><li class="nav-item nav-level-6"><a class="nav-link" href="#在本地主机执行安装命令"><span class="nav-number">1.1.1.2.4.</span> <span class="nav-text">在本地主机执行安装命令</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Docker-Compose"><span class="nav-number">1.2.</span> <span class="nav-text">Docker Compose</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#docker-compose-yaml-配置文件"><span class="nav-number">1.2.1.</span> <span class="nav-text">docker-compose.yaml 配置文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Spring-Boot-项目配置"><span class="nav-number">1.2.2.</span> <span class="nav-text">Spring Boot 项目配置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#项目部署"><span class="nav-number">1.2.3.</span> <span class="nav-text">项目部署</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Docker-Swarm"><span class="nav-number">1.3.</span> <span class="nav-text">Docker Swarm</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Docker-Swarm的获取"><span class="nav-number">1.3.1.</span> <span class="nav-text">Docker Swarm的获取</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#创建一个Swarm的集群"><span class="nav-number">1.3.2.</span> <span class="nav-text">创建一个Swarm的集群</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Swarm的集群管理"><span class="nav-number">1.3.3.</span> <span class="nav-text">Swarm的集群管理</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#向Swarm的集群中添加节点"><span class="nav-number">1.3.3.1.</span> <span class="nav-text">向Swarm的集群中添加节点</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#节点更新"><span class="nav-number">1.3.3.2.</span> <span class="nav-text">节点更新</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#删除节点"><span class="nav-number">1.3.3.3.</span> <span class="nav-text">删除节点</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#构建服务"><span class="nav-number">1.3.4.</span> <span class="nav-text">构建服务</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#查看服务列表"><span class="nav-number">1.3.4.1.</span> <span class="nav-text">查看服务列表</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#查看服务详情"><span class="nav-number">1.3.4.2.</span> <span class="nav-text">查看服务详情</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#删除swarm上的服务"><span class="nav-number">1.3.5.</span> <span class="nav-text">删除swarm上的服务</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#通过YAML文件构建服务"><span class="nav-number">1.3.6.</span> <span class="nav-text">通过YAML文件构建服务</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文章"><span class="nav-number">2.</span> <span class="nav-text">参考文章</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Alex.Yao</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.8.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v6.5.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="总访客量">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="总访问量">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="//cdn.jsdelivr.net/jquery/2.1.3/jquery.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="//cdn.jsdelivr.net/fastclick/1.0.6/fastclick.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="//cdn.jsdelivr.net/jquery.lazyload/1.9.3/jquery.lazyload.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="//cdn.jsdelivr.net/velocity/1.2.3/velocity.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="//cdn.jsdelivr.net/velocity/1.2.3/velocity.ui.min.js"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="//cdn.jsdelivr.net/fancybox/2.1.5/jquery.fancybox.pack.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.5.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.5.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.5.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.5.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.5.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.5.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  
+  
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(function (item) {
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'JBdlJKQ2bgw2OWrDF3oXRr5V-gzGzoHsz',
+        appKey: 'EwdpiN5PKNREh7CW1MipG6Ws',
+        placeholder: 'Just go go',
+        avatar:'mm',
+        meta:guest,
+        pageSize:'10' || 10,
+        visitor: false
+    });
+  </script>
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script>
+    
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+
+      Counter('get', '/classes/Counter', { where: JSON.stringify({ url }) })
+        .done(function ({ results }) {
+          if (results.length > 0) {
+            var counter = results[0];
+            
+            Counter('put', `/classes/Counter/${counter.objectId}`, JSON.stringify({ time: { "__op":"Increment", "amount":1 } }))
+            
+            .done(function () {
+                  var $element = $(document.getElementById(url));
+                  $element.find('.leancloud-visitors-count').text(counter.time + 1);
+            })
+            
+            .fail(function ({ responseJSON }) {
+                console.log('Failed to save Visitor num, with error message: ' + responseJSON.error);
+            })
+          } else {
+            
+              var $element = $(document.getElementById(url));
+              $element.find('.leancloud-visitors-count').text('Counter not initialized! See more at console err msg.');
+              console.error('ATTENTION! LeanCloud counter has security bug, see here how to solve it: https://github.com/theme-next/hexo-leancloud-counter-security. \n But you also can use LeanCloud without security, by set \'security\' option to \'false\'.');
+            
+          }
+        })
+      .fail(function ({ responseJSON }) {
+        console.log('LeanCloud Counter Error:' + responseJSON.code + " " + responseJSON.error);
+      });
+    }
+    
+
+    $(function() {
+      $.get('https://app-router.leancloud.cn/2/route?appId=' + "JBdlJKQ2bgw2OWrDF3oXRr5V-gzGzoHsz")
+        .done(function ({ api_server }) {
+          var Counter = function (method, url, data) {
+            return $.ajax({
+              method: method,
+              url: `https://${api_server}/1.1${url}`,
+              headers: {
+                'X-LC-Id': "JBdlJKQ2bgw2OWrDF3oXRr5V-gzGzoHsz",
+                'X-LC-Key': "EwdpiN5PKNREh7CW1MipG6Ws",
+                'Content-Type': 'application/json',
+              },
+              data: data,
+            });
+          };
+          
+          addCount(Counter);
+          
+        })
+    });
+  </script>
+
+
+
+  
+
+  
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';        
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  <!-- 页面点击小红心 --> 
+  <script type="text/javascript" src="/js/src/love.js"></script>
+</body>
+</html>
